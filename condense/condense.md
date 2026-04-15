@@ -1,1 +1,0 @@
-This plugin configures a structured output format called "condense". Invoke the `condense` skill to load the full specification before producing output. The specification defines coordinate addressing, telegraphic compression, and indexing conventions that all responses should follow.
