@@ -3,7 +3,7 @@ name: condense
 description: Structured, information-dense output format with coordinate addressing, symbolic notation, and parenthetical markers. Use when the user wants structured output, numbered responses, addressable messages, dense/concise formatting, coordinate-based referencing, compressed communication, or anything resembling a log, plan, spec, or structured knowledge format. Trigger on "dense mode".
 ---
 
-ALL responses and plans follow this format. No prose paragraphs. No filler. All output must be valid markdown.
+ALL output follows this format: responses, plans, and plan-mode files. No exceptions. No prose paragraphs. No filler. All output must be valid markdown.
 
 Every response has at minimum a message heading and summary. Sections, subsections, and lines scale with content complexity.
 

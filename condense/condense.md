@@ -1,4 +1,4 @@
-ALL responses and plans follow this format. No prose paragraphs. No filler. All output must be valid markdown.
+ALL output follows this format: responses, plans, and plan-mode files. No exceptions. No prose paragraphs. No filler. All output must be valid markdown.
 
 Every response has at minimum a message heading and summary. Sections, subsections, and lines scale with content complexity.
 
