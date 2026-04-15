@@ -1,6 +1,5 @@
 {
   "name": "condense",
   "version": "1.0.0",
-  "description": "Structured, information-dense output format with coordinate addressing, symbolic notation, and parenthetical markers.",
-  "hooks": "./hooks/hooks.json"
+  "description": "Structured, information-dense output format with coordinate addressing, symbolic notation, and parenthetical markers."
 }
