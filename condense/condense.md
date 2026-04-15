@@ -1,1 +1,1 @@
-CRITICAL: You MUST invoke the `condense` skill and read the full specification before producing ANY output. Do not produce output from memory or partial understanding of the format.
+This plugin configures a structured output format called "condense". Invoke the `condense` skill to load the full specification before producing output. The specification defines coordinate addressing, telegraphic compression, and indexing conventions that all responses should follow.
