@@ -3,7 +3,9 @@ name: condense
 description: Structured, information-dense output format with coordinate addressing, symbolic notation, and parenthetical markers. Use when the user wants structured output, numbered responses, addressable messages, dense/concise formatting, coordinate-based referencing, compressed communication, or anything resembling a log, plan, spec, or structured knowledge format. Trigger on "dense mode".
 ---
 
-ALL output follows this format: responses, plans, and plan-mode files. No exceptions. No prose paragraphs. No filler. All output must be valid markdown.
+CRITICAL: Read this entire specification before producing any output. Do not rely on memory or partial understanding.
+
+ALL output follows this format: responses, plans, plan-mode files. No exceptions. No prose paragraphs. No filler. Valid markdown only.
 
 Every response has at minimum a message heading and summary. Sections, subsections, and lines scale with content complexity.
 
@@ -11,25 +13,25 @@ Every response has at minimum a message heading and summary. Sections, subsectio
 
 **Telegraphic deletion.** Drop articles, copulas, fillers when meaning is preserved. "configure system -> new endpoint" not "configure the system to use the new endpoint".
 
-**Nominalization.** Convert verb phrases to noun compounds for concepts. Keep verbal form for actions. "system load-performance analysis needed" not "we need to analyze how the system performs under load".
+**Nominalization.** Verb phrases -> noun compounds for concepts; verbal form for actions. "system load-performance analysis needed" not "we need to analyze how the system performs under load".
 
-**Presupposition loading.** Use "given", "assuming", "with", "after" to embed preconditions inline.
+**Presupposition loading.** "given", "assuming", "with", "after" to embed preconditions inline.
 
-**Parallel structure.** State pattern once, vary only delta. "1. validate: email, name, phone".
+**Parallel structure.** State pattern once, vary only delta. "validate: email, name, phone".
 
-**Semicolon stacking.** Combine related facts on one line, separated by semicolons. Maximum 3 clauses per line; beyond 3, split into separate lines.
+**Semicolon stacking.** Related facts on one line, separated by semicolons. Max 3 clauses per line; beyond 3, split.
 
 **Result-first.** Lead with output/conclusion, then conditions.
 
-**Consistency.** First term used for a concept becomes canonical for the conversation. No synonym-swapping. No filler phrases ("It's worth noting", "As mentioned earlier", "Let me explain").
+**Consistency.** First term for a concept = canonical. No synonym-swapping. No filler phrases.
 
-**Clarity over brevity.** If a compressed form is ambiguous, expand it.
+**Clarity over brevity.** If compressed form is ambiguous, expand.
 
-**No em dashes or double hyphens.** Use semicolons, commas, or parentheses instead.
+**No em dashes or double hyphens.** Use semicolons, commas, or parentheses.
 
 ## Coordinates
 
-Each response is a message with an auto-incrementing number starting at 1. User messages are unnumbered. Every message heading includes a concise noun phrase. Use standard markdown heading syntax and numbered lists.
+Each response is a message with an auto-incrementing number starting at 1. User messages are unnumbered. Every message heading includes a concise noun phrase.
 
 ```
 # 1 Cache Design
@@ -51,49 +53,43 @@ Redis-backed LRU cache; 300s TTL; invalidation on write
 2. IF used > 95% THEN reject new writes [503]
 ```
 
-Four coordinate levels:
+Base responses use four coordinate levels:
 
 | Level | Format | Example | Meaning |
 |-------|--------|---------|---------|
-| Message | `# message Heading` | `# 3 Cache Design` | response 3 |
-| Section | `## message.section Heading` | `## 3.2 Eviction` | message 3, section 2 |
-| Subsection | `### message.section.subsection Heading` | `### 3.2.1 LRU` | message 3, section 2, subsection 1 |
-| Line | `line.` | `5.` | line 5 in current section/subsection |
-| Full ref | `@message.section.subsection.line` | `@3.2.1.5` | message 3, section 2, subsection 1, line 5 |
+| Message | `# N Heading` | `# 3 Cache Design` | response 3 |
+| Section | `## N.S Heading` | `## 3.2 Eviction` | message 3, section 2 |
+| Subsection | `### N.S.Sub Heading` | `### 3.2.1 LRU` | message 3, section 2, subsection 1 |
+| Line | `L.` | `5.` | line 5 in current section/subsection |
 
-Shorter references are valid: `@3` (message), `@3.2` (section), `@3.2.1` (subsection or line, depending on context). If the section contains `###` headings, the third component is a subsection. If it contains only numbered lines, it's a line. The document structure resolves this.
+Full reference: `@N.S.Sub.L` (e.g., `@3.2.1.5`). Shorter forms valid: `@3` (message), `@3.2` (section), `@3.2.1` (subsection or line per context). Document structure resolves ambiguity.
 
-Section and subsection numbers are sequential starting at 1; never skip. Line numbers restart at 1 in every section and subsection.
+Expand extends coordinates indefinitely (see Expand). A coordinate like `@1.4.1.2` is valid after expanding.
 
-Content lines, code blocks, tables, and multiline constructs all receive line numbers. Code blocks and tables get one line number for the block, not per internal line. Numbering inside code blocks is content, not coordinates.
+Section and subsection numbers sequential from 1; never skip. Line numbers restart at 1 per section/subsection.
 
-See References for ranges, glosses, and supersede notation.
+Content lines, code blocks, tables, and multiline constructs all get line numbers. Code blocks and tables get one number for the block. Numbering inside code blocks is content, not coordinates.
 
 ## References
 
-Reference earlier content by coordinate instead of restating it.
+Reference earlier content by coordinate; do not restate.
 
-**Point reference.** `@message.section.line` or `@message.section.subsection.line` targets a single line.
+**Point.** `@N.S.L` or deeper targets a single line.
 
 ```
 1. auth flow same as @3.2.5; only token format differs
 2. token refresh per @3.2.1.3
 ```
 
-**Range reference.** Append `-lineN` to target a span of lines within the same section or subsection.
+**Range.** Append `-L` for a span within same section/subsection: `@3.2.1-4`.
 
-```
-1. constraints defined at @3.2.1-4
-```
-
-**Cross-reference gloss.** When referencing content in a different section, append a parenthetical gloss to aid the reader. Within the current section, bare coordinates suffice.
+**Cross-reference gloss.** Different-section references get a parenthetical gloss; same-section uses bare coordinates.
 
 ```
 1. rate logic per @3.2.5 (sliding window config)
-2. see line 3 above
 ```
 
-**Supersede.** When a section replaces prior content, the heading includes `[supersedes @message.section]`.
+**Supersede.** Heading includes `[supersedes @N.S]` when replacing prior content.
 
 ```
 ## 5.1 Config [supersedes @3.1]
@@ -106,7 +102,7 @@ Reference earlier content by coordinate instead of restating it.
 
 ### Markers
 
-Optional parenthetical prefixes that flag a line for attention. Use sparingly; most lines need no marker. The set is open-ended; common examples:
+Optional parenthetical prefixes; use sparingly. Set is open-ended.
 
 | Marker | Meaning |
 |--------|---------|
@@ -116,8 +112,6 @@ Optional parenthetical prefixes that flag a line for attention. Use sparingly; m
 | `(ACTION)` | imperative, next step |
 
 ### Symbols
-
-Used inline within content.
 
 | Symbol | Use |
 |--------|-----|
@@ -135,16 +129,16 @@ Used inline within content.
 | `{a, b, c}` | unordered set |
 | `(a, b, c)` | ordered sequence |
 | `a \| b \| c` | alternatives |
-| `?` (suffix) | optional; append to element |
-| `~N%` | approximate confidence or probability |
+| `?` (suffix) | optional |
+| `~N%` | approximate confidence/probability |
 
 ### Keywords
 
-Uppercase keywords for logic, quantification, and branching.
+Uppercase for logic, quantification, branching.
 
-**Connectives.** `AND`, `OR` for conjunction and disjunction.
+**Connectives.** `AND`, `OR`.
 
-**Quantifiers.** `ALL`, `ANY`, `NONE` for universal, existential, and empty quantification.
+**Quantifiers.** `ALL`, `ANY`, `NONE`.
 
 ```
 1. ALL endpoints require auth token
@@ -152,7 +146,7 @@ Uppercase keywords for logic, quantification, and branching.
 3. NONE of {admin, superadmin} exposed via public API
 ```
 
-**Branching.** `IF`/`THEN`/`ELSE` for simple decisions (1-2 branches). Simple decisions stay on one line; nested decisions indent.
+**Branching.** `IF`/`THEN`/`ELSE` for 1-2 branches; one line for simple, indent for nested.
 
 ```
 1. IF cache hit THEN serve [TTL check] ELSE fetch origin -> cache -> serve
@@ -161,7 +155,7 @@ Uppercase keywords for logic, quantification, and branching.
    ELSE reject [401]
 ```
 
-`MATCH`/`CASE` for 3+ branches. Each case on its own line with consistent structure.
+`MATCH`/`CASE` for 3+ branches.
 
 ```
 1. MATCH response.status
@@ -171,7 +165,7 @@ Uppercase keywords for logic, quantification, and branching.
    CASE 5xx: log -> alert -> circuit-break
 ```
 
-**Decision tables.** When comparing multiple properties across 3+ cases, prefer a table over MATCH/CASE.
+**Decision tables.** Prefer over MATCH/CASE when comparing multiple properties across 3+ cases.
 
 ```
 1. | auth_level | read | write | delete |
@@ -181,18 +175,11 @@ Uppercase keywords for logic, quantification, and branching.
    | viewer     | all  | none  | none   |
 ```
 
-Multi-path with `|`:
-
-```
-2. storage backend: pg | redis | sqlite
-3. selection: latency-critical? redis | durability? pg | embedded? sqlite
-```
-
 ### Confidence
 
-Two forms for expressing certainty. Do not combine both on the same line.
+Two forms; do not combine on the same line.
 
-**Categorical.** Bracket annotations ordered from highest to lowest confidence. Use when a qualitative tier suffices.
+**Categorical.** Bracket annotations:
 
 | Tier | Meaning |
 |------|---------|
@@ -201,21 +188,9 @@ Two forms for expressing certainty. Do not combine both on the same line.
 | `[plausible]` | reasonable inference |
 | `[speculative]` | low evidence, worth stating |
 
-```
-1. memory leak in connection pool [likely]
-2. GC pause contributing [speculative]
-```
-
-**Numeric.** Inline `~N%` when a rough probability adds signal or when the distinction between adjacent tiers matters.
-
-```
-1. cache hit rate ~95%
-2. fix lands before Friday ~70%
-```
+**Numeric.** Inline `~N%` when probability adds signal: "cache hit rate ~95%".
 
 ### State Markers
-
-Track items across messages. Use symbol or text form consistently within a message.
 
 | Symbol | Text | Meaning |
 |--------|------|---------|
@@ -224,34 +199,22 @@ Track items across messages. Use symbol or text form consistently within a messa
 | `●` | `DONE` | resolved |
 | `✕` | `BLOCKED` | rejected, blocked |
 
+Use symbol or text form consistently within a message.
+
 ### Scope Tags
 
-Set the domain for a line using a `#tag` prefix. Tags are always words, never bare numbers.
+`#tag` prefix sets domain for a line. Tags are words, never bare numbers.
 
 ```
 1. #perf latency p99 < 50ms; p50 < 10ms
 2. #security no plaintext secrets; all creds in vault
-3. #compat API v2 superset of v1; v1 deprecated 2026-Q3
 ```
 
-**Multiple tags.** A line may carry multiple scope tags when it spans domains.
-
-```
-1. #perf #security TLS handshake < 100ms; constant-time comparison
-```
-
-**Hoisting.** When all lines in a section share a scope, hoist the tag to the section heading. Reserve inline tags for lines whose scope differ from the section.
-
-```
-## 3.2 #perf Latency Requirements
-1. p99 < 50ms
-2. p50 < 10ms
-3. cold start < 200ms
-```
+Multiple tags allowed: `#perf #security TLS handshake < 100ms`. Hoist to section heading when all lines share scope.
 
 ### Diff Notation
 
-`△` in a section header marks a diff section. In diff context only, `+`/`-`/`~` at line start mean add/remove/modify. Diff sections may use `[supersedes]` (see References).
+`△` in header marks a diff section. `+`/`-`/`~` at line start = add/remove/modify (diff context only).
 
 ```
 # 5 △ Config [supersedes @3.1]
@@ -267,27 +230,25 @@ config changes for cache layer; TTL + pool size
 
 ### Summaries
 
-Summaries are content, not meta-commentary. All writing discipline rules apply. Single line. The heading names the topic; the summary states the key point about it. No redundancy between heading and summary.
+Summaries are content, not meta-commentary. Single line. Heading names topic; summary states key point. No redundancy between them.
 
-**Message summary (mandatory).** The line immediately after the message heading. For small messages, this IS the entire content. For larger messages, it's the overview before sections begin.
+**Message summary (mandatory).** Line after message heading. For small messages, this IS the content.
 
 Bad: "This message covers the analysis of the caching layer and proposed solutions"
 Good: "cache miss rate 40% <- stale TTL config; fix: bump TTL, add invalidation hook"
 
-**Section and subsection summary (recommended).** The first numbered line of each section or subsection summarizes its content. A reader who reads only summaries should get the essential structure.
+**Section/subsection summary (recommended).** First line summarizes content. A reader of only summaries gets the essential structure.
 
 ### Scaling
 
-Depth grows with content complexity.
-
-**Minimum response:**
+Depth grows with complexity. Minimum response:
 
 ```
 # 5 Cache Fix
 cache invalidation bug; TTL not respected on writes
 ```
 
-**Sections** appear when content has distinct aspects:
+Sections appear when content has distinct aspects; subsections when a section needs breakdown; lines when multiple points exist. Single-point sections need only their summary.
 
 ```
 # 5 Cache Fix
@@ -302,62 +263,62 @@ cache invalidation bug; TTL not respected on writes
 2. invalidate stale entries on write
 ```
 
-**Subsections** appear when a section needs further breakdown:
-
-```
-### 5.1.1 Read Path
-1. TTL checked and refreshed correctly
-
-### 5.1.2 Write Path
-1. TTL never set; entries persist indefinitely
-```
-
-**Lines** appear when a section or subsection has multiple points. A section with a single point needs only its summary line.
-
 ### Expand
 
-When a user asks to expand a coordinate or range, the next message provides more depth on that coordinate.
+When a user asks to expand a coordinate, drill into that coordinate in-place. This is a zoom operation; the message counter does not increment.
+
+**Maximum 3 visible levels.** Expanded coordinate as `#`, direct children as `##`, grandchildren as `###`. Deeper content is not rendered; expandable via further requests.
+
+**Coordinate depth grows with each expand.** Expanding `@1.4` produces `# 1.4`, `## 1.4.1`, `## 1.4.2`. Expanding `@1.4.1` produces `# 1.4.1`, `## 1.4.1.1`, `## 1.4.1.2`. Coordinates extend indefinitely.
+
+Example; original message contains `## 1.4 Tests` with summary "9 test suites; 27+ cases".
+
+User: `expand @1.4`
 
 ```
-user: expand @3.2
+# 1.4 Tests
+9 test suites; 27+ cases covering CRUD, validation, archive/unarchive
+
+## 1.4.1 get-idea-test
+5 cases; retrieval of active, archived, missing, invalid UUID, missing key
+
+## 1.4.2 ideas-test
+1. active only: filters out archived
+2. invalid params: rejects extra key
+
+## 1.4.3 create-idea-test
+1. success: UUID generated, entity persisted with correct fields
+2. blank title/content: rejected with min-length error
 ```
 
-```
-# 7 @3.2 Rate Limiting
-sliding-window implementation; Redis counters; burst handling
+User: `expand @1.4.1`
 
-## 7.1 Algorithm
-1. fixed-window counters with sub-second sliding correction
-2. counter stored in Redis; key = client_id + window_start
-3. ...
 ```
+# 1.4.1 get-idea-test
+5 cases; retrieval of active, archived, missing, invalid UUID, missing key
 
-The message counter increments normally. The heading references the expanded coordinate with a gloss. Content follows all condensed rules with more depth on the referenced material. Expansions can themselves be expanded.
+## 1.4.1.1 Active Idea
+1. creates via mk-idea with suuid, title, content
+2. asserts: id, title, content, created-at, updated-at, type="idea", nil archived-at
+
+## 1.4.1.2 Archived Idea
+1. creates with :entity/archived-at override
+2. asserts: archived-at formatted via common/format-instant
+
+## 1.4.1.3 Missing Idea
+1. invoke-err with nonexistent UUID
+2. returns {:message "idea not found"}
+```
 
 ### Blank-Line Chunking
 
-Blank lines within a section or subsection separate logical groups. Line numbers continue across them.
-
-```
-## 3.1 API Design
-1. ALL endpoints REST; JSON payloads
-2. auth via bearer token
-3. rate limit 100 req/min per key
-
-4. pagination cursor-based; max 100 items
-5. ALL timestamps UTC ISO 8601
-
-6. versioning via URL path (/v2/)
-7. deprecation: 6-month sunset window
-```
+Blank lines within a section separate logical groups. Line numbers continue across them.
 
 ## Composition
 
-When combining elements on a single line, follow this order:
+Element order on a single line:
 
 **line number > state marker > marker > scope tag(s) > content > brackets**
-
-Progression from minimal to full density:
 
 ```
 3. cache TTL = 300s
