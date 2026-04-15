@@ -1,0 +1,15 @@
+{
+  "name": "llm-plugins",
+  "owner": {
+    "name": "sudorock"
+  },
+  "plugins": [
+    {
+      "name": "condense",
+      "source": "./condense",
+      "description": "Structured, information-dense output format with coordinate addressing, symbolic notation, and parenthetical markers.",
+      "version": "1.0.0",
+      "tags": ["output-format", "structured"]
+    }
+  ]
+}
